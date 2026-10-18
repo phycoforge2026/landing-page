@@ -29,6 +29,8 @@
         --green-deep: #177245;
         --ice: #7cc3e6;
         --ice-soft: #dff1fa;
+        --uvp-a: #e3f1ee;
+        --uvp-b: #d7ece3;
         --dark-panel: #07231f;
         --dark-panel-2: #0a352c;
         --code-bg: #0d1f1b;
@@ -53,6 +55,8 @@
           --green-deep: #63cf92;
           --ice: #7cc3e6;
           --ice-soft: #17303c;
+          --uvp-a: #10322f;
+          --uvp-b: #0d2a2e;
           --code-bg: #0a1714;
           --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.45);
           --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 44px -16px rgba(0, 0, 0, 0.55);
@@ -285,18 +289,89 @@
       .marquee-track span::after { content: "·"; color: var(--green); opacity: 0.8; }
       @keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-      /* ---------- canvas ---------- */
-      .canvas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-      .c-item {
-        background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
-        padding: 22px 22px 20px; box-shadow: var(--shadow-card);
+      /* ---------- lean canvas board ---------- */
+      .board {
+        background: var(--line); border: 1px solid var(--line);
+        border-radius: 28px; overflow: hidden; box-shadow: var(--shadow-card);
+      }
+      .board-head {
+        background: var(--surface);
+        display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap;
+        padding: 16px 22px;
+      }
+      .board-head .bh-l {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600;
+        letter-spacing: 0.18em; color: var(--ink);
+      }
+      .board-head .bh-l .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(46, 158, 99, 0.16); }
+      .board-head .bh-r { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--gray); }
+      .board-grid {
+        display: grid; gap: 1px;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: 1.05fr 1.05fr 0.8fr 0.8fr auto;
+      }
+      .cell {
+        background: var(--surface); padding: 20px 20px 22px; position: relative;
         transition: transform 0.25s, box-shadow 0.25s;
       }
-      .c-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
-      .c-item .k { font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; color: var(--teal); display: flex; gap: 8px; align-items: center; }
-      .c-item .k .no { color: var(--gray); }
-      .c-item h4 { margin: 10px 0 6px; font-size: 16.5px; font-weight: 700; }
-      .c-item p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.6; }
+      .cell::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        opacity: 0; transition: opacity 0.25s;
+      }
+      .cell:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); z-index: 2; }
+      .cell:hover::before { opacity: 1; }
+      .cell .c-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+      .cell .ic {
+        width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--ice-soft); color: var(--teal);
+      }
+      .cell .no { font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; color: var(--gray); padding-top: 3px; }
+      .cell .en { margin-top: 13px; font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.13em; color: var(--teal); line-height: 1.55; }
+      .cell h4 { margin: 5px 0 7px; font-size: 16.5px; font-weight: 700; letter-spacing: -0.01em; }
+      .cell p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.62; }
+      /* board placement — classic lean canvas five-column structure */
+      .cell-problem   { grid-column: 1 / 3;  grid-row: 1 / 4; }
+      .cell-alt       { grid-column: 1 / 3;  grid-row: 4 / 5; }
+      .cell-solution  { grid-column: 3 / 5;  grid-row: 1 / 3; }
+      .cell-metrics   { grid-column: 3 / 5;  grid-row: 3 / 5; }
+      .cell-uvp       { grid-column: 5 / 7;  grid-row: 1 / 4; }
+      .cell-concept   { grid-column: 5 / 7;  grid-row: 4 / 5; }
+      .cell-advantage { grid-column: 7 / 9;  grid-row: 1 / 3; }
+      .cell-channels  { grid-column: 7 / 9;  grid-row: 3 / 5; }
+      .cell-segments  { grid-column: 9 / 11; grid-row: 1 / 4; }
+      .cell-adopters  { grid-column: 9 / 11; grid-row: 4 / 5; }
+      .cell-cost      { grid-column: 1 / 6;  grid-row: 5 / 6; }
+      .cell-revenue   { grid-column: 6 / 11; grid-row: 5 / 6; }
+      /* UVP — the visual centre of the board */
+      .cell-uvp {
+        background:
+          radial-gradient(320px 190px at 88% -12%, rgba(124, 195, 230, 0.32), transparent 62%),
+          linear-gradient(160deg, var(--uvp-a), var(--uvp-b));
+      }
+      .cell-uvp .ic { background: rgba(255, 255, 255, 0.65); }
+      @media (prefers-color-scheme: dark) { .cell-uvp .ic { background: rgba(255, 255, 255, 0.1); } }
+      .cell-uvp h4 { font-size: 20px; }
+      .cell-uvp p { font-size: 14.5px; }
+      .uvp-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+      .uvp-tags span {
+        font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+        color: var(--green-deep); background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(11, 85, 99, 0.22); border-radius: 999px; padding: 5px 11px;
+      }
+      @media (prefers-color-scheme: dark) { .uvp-tags span { background: rgba(255, 255, 255, 0.07); border-color: rgba(143, 208, 221, 0.3); } }
+      /* high-level concept — the slogan cell */
+      .cell-concept .slogan { font-size: 17px; font-weight: 800; color: var(--ink); line-height: 1.5; letter-spacing: 0.01em; }
+      .cell-concept .slogan-en { margin-top: 7px; font-family: "JetBrains Mono", monospace; font-size: 9.5px; letter-spacing: 0.08em; color: var(--gray); line-height: 1.65; }
+      .board-foot {
+        background: var(--surface);
+        display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap;
+        padding: 13px 22px;
+      }
+      .board-foot .bf-l { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--gray); }
+      .board-foot .bf-r { font-weight: 800; font-size: 15px; letter-spacing: 0.24em; color: var(--ink); }
 
       /* ---------- team ---------- */
       .team-photo {
@@ -369,7 +444,7 @@
         .reveal { opacity: 1; transform: none; transition: none; }
         .marquee-track { animation: none; }
         .ring-fill, .bar-fill { transition: none; }
-        .card, .c-item, .btn { transition: none; }
+        .card, .cell, .btn { transition: none; }
       }
 
       /* ---------- responsive ---------- */
@@ -378,14 +453,15 @@
         .hero { padding-top: 140px; }
         .sec-head { grid-template-columns: 1fr; gap: 16px; align-items: start; }
         .cards { grid-template-columns: 1fr 1fr; }
-        .canvas-grid { grid-template-columns: 1fr 1fr; }
+        .board-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+        .board-grid .cell { grid-column: auto; grid-row: auto; }
         .team-grid { grid-template-columns: 1fr 1fr; }
         .cta-mascot { display: none; }
       }
       @media (max-width: 640px) {
         .nav-links { display: none; }
         .nav { gap: 16px; padding-left: 16px; }
-        .cards, .canvas-grid, .team-grid { grid-template-columns: 1fr; }
+        .cards, .team-grid { grid-template-columns: 1fr; }
         .lab-main { flex-direction: column; align-items: flex-start; }
         .lab-stats { width: 100%; }
         .cta-panel { padding: 54px 26px 48px; text-align: left; }
@@ -651,23 +727,131 @@
         <div class="sec-head">
           <h2>创新画布，<br /><span class="tone-gray">十二个格子说清一件事。</span></h2>
           <p class="sec-intro">
-            <span class="en">FROM PROBLEM TO BUSINESS MODEL.</span>
-            从要解决的问题，到客户、渠道与收入模式——Ocean-Gel 的完整创新画布。
+            <span class="en">ONE BOARD. TWELVE BOXES. THE WHOLE STORY.</span>
+            从要解决的问题，到客户、渠道与收入模式——一张精益画布（Lean Canvas），讲清 Ocean-Gel 的完整故事。
           </p>
         </div>
-        <div class="canvas-grid">
-          <article class="c-item reveal"><div class="k"><span class="no">01</span>PROBLEM</div><h4>要解决的问题</h4><p>生鲜冷链中的传统高分子凝胶冰袋难以降解，引发严重的塑料污染和微塑料海洋危害。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">02</span>EXISTING ALTERNATIVES</div><h4>现有替代方案</h4><p>传统不可降解 SAP 树脂冰袋（污染大）、干冰（成本高且有安全隐患）、纯水冰袋（保冷时间过短）。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">03</span>SOLUTION</div><h4>解决方案</h4><p>海藻酸钠交联制成的水凝胶内芯，包裹在全生物降解薄膜中，实现性能不减的 100% 自然降解。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">04</span>KEY METRICS</div><h4>关键指标</h4><p>凝胶在自然环境中的完全降解天数、与传统冰袋的保冷时长对比百分比、单位生产成本。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">05</span>UNIQUE VALUE PROPOSITION</div><h4>独特价值</h4><p>性能比肩传统冰袋，但能直接作为植物肥料或在海洋中安全溶解的零污染冷链终极方案。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">06</span>HIGH LEVEL CONCEPT</div><h4>一句话概念</h4><p>归于海洋的生鲜冷链绿卫士。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">07</span>SUSTAINABLE ADVANTAGE</div><h4>可持续壁垒</h4><p>基于特定海洋生物材料的低成本交联配方，以及先发积累的完整降解与保冷测试对比数据库。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">08</span>CHANNELS</div><h4>渠道</h4><p>直接对接顺丰、京东等大型生鲜电商物流巨头，以及高端有机农产品原产地直发 B2B 合作。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">09</span>CUSTOMER SEGMENTS</div><h4>客户群体</h4><p>具有强 ESG 减碳指标要求的大型物流企业，以及注重环保品牌形象的生鲜电商平台。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">10</span>EARLY ADOPTERS</div><h4>早期客户</h4><p>致力于可持续发展的高端海鲜 / 有机生鲜寄递品牌，以及亟需提升绿色包装形象的跨国食品供应商。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">11</span>COST STRUCTURE</div><h4>成本结构</h4><p>海藻酸钠及生物降解膜等原材料采购、凝胶交联生产线搭建测试、第三方环保降解认证费用。</p></article>
-          <article class="c-item reveal"><div class="k"><span class="no">12</span>REVENUE STREAMS</div><h4>收入来源</h4><p>面向 B 端物流及生鲜企业的冰袋大宗采购销售，以及定制化环保包装解决方案的 ESG 咨询服务费。</p></article>
+        <div class="board reveal">
+          <div class="board-head">
+            <span class="bh-l"><span class="dot"></span>LEAN CANVAS · 精益画布</span>
+            <span class="bh-r">PHYCOFORGE · OCEAN-GEL</span>
+          </div>
+          <div class="board-grid">
+            <article class="cell cell-problem">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><circle cx="12" cy="15.2" r="1.3" fill="currentColor" stroke="none"/></svg></span>
+                <span class="no">01</span>
+              </div>
+              <div class="en">PROBLEM</div>
+              <h4>问题</h4>
+              <p>生鲜冷链中的传统高分子凝胶冰袋难以降解，引发严重的塑料污染和微塑料海洋危害。</p>
+            </article>
+            <article class="cell cell-solution">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.4"/><path d="M11.3 11.7 19.5 3.5M16.4 6.4l2.7 2.7M14 8.8l2.1 2.1"/></svg></span>
+                <span class="no">02</span>
+              </div>
+              <div class="en">SOLUTION</div>
+              <h4>解决方案</h4>
+              <p>海藻酸钠交联制成的水凝胶内芯，包裹在全生物降解薄膜中——性能不减的 100% 自然降解。</p>
+            </article>
+            <article class="cell cell-uvp">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10" width="15" height="4"/><path d="M6.2 14v6.3h11.6V14M12 10v10.3"/><path d="M12 10c-4.6 0-5.1-4.6-2.7-5C11.3 4.7 12 6.9 12 10Zm0 0c4.6 0 5.1-4.6 2.7-5C12.7 4.7 12 6.9 12 10Z"/></svg></span>
+                <span class="no">03</span>
+              </div>
+              <div class="en">UNIQUE VALUE PROPOSITION</div>
+              <h4>独特价值</h4>
+              <p>性能比肩传统冰袋，却能直接作为植物肥料、或在海洋中安全溶解——零污染冷链的终极方案。</p>
+              <div class="uvp-tags"><span>降解率 100%</span><span>微塑料残留 0</span></div>
+            </article>
+            <article class="cell cell-advantage">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6v5.2c0 4.6 3 7.6 7 9.3 4-1.7 7-4.7 7-9.3V6Z"/><path d="m9.1 11.7 2.1 2.1 3.8-4.1"/></svg></span>
+                <span class="no">04</span>
+              </div>
+              <div class="en">UNFAIR ADVANTAGE</div>
+              <h4>竞争壁垒</h4>
+              <p>基于特定海洋生物材料的低成本交联配方，以及先发积累的完整降解与保冷测试对比数据库。</p>
+            </article>
+            <article class="cell cell-segments">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8.4" r="3.4"/><path d="M3.4 19.6c.6-3.1 2.8-4.7 5.6-4.7s5 1.6 5.6 4.7"/><path d="M15.4 5.5a3.4 3.4 0 0 1 0 5.9M17.7 15.3c1.6.7 2.6 2.1 3 4.3"/></svg></span>
+                <span class="no">05</span>
+              </div>
+              <div class="en">CUSTOMER SEGMENTS</div>
+              <h4>客户群体</h4>
+              <p>具有强 ESG 减碳指标要求的大型物流企业，以及注重环保品牌形象的生鲜电商平台。</p>
+            </article>
+            <article class="cell cell-alt">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7.5h12.4M13.6 4.2 16.9 7.5l-3.3 3.3"/><path d="M20 16.5H7.6M10.4 13.2 7.1 16.5l3.3 3.3"/></svg></span>
+                <span class="no">06</span>
+              </div>
+              <div class="en">EXISTING ALTERNATIVES</div>
+              <h4>现有替代方案</h4>
+              <p>传统不可降解 SAP 树脂冰袋（污染大）、干冰（成本高且有安全隐患）、纯水冰袋（保冷时间过短）。</p>
+            </article>
+            <article class="cell cell-metrics">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v15.6h16"/><path d="m7.4 15.4 3.4-4.3 3 2.4 4.6-5.4"/><circle cx="18.4" cy="8.1" r="1.3" fill="currentColor" stroke="none"/></svg></span>
+                <span class="no">07</span>
+              </div>
+              <div class="en">KEY METRICS</div>
+              <h4>关键指标</h4>
+              <p>凝胶在自然环境中的完全降解天数、与传统冰袋的保冷时长对比百分比、单位生产成本。</p>
+            </article>
+            <article class="cell cell-concept">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.9 9.1l5.6 2.9-5.6 2.9L12 20.5l-1.9-5.6-5.6-2.9 5.6-2.9Z"/></svg></span>
+                <span class="no">08</span>
+              </div>
+              <div class="en">HIGH LEVEL CONCEPT</div>
+              <h4>核心理念</h4>
+              <p class="slogan">归于海洋的生鲜冷链绿卫士。</p>
+              <p class="slogan-en">THE GREEN GUARDIAN OF COLD CHAINS, RETURNING TO THE OCEAN.</p>
+            </article>
+            <article class="cell cell-channels">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h10.6v8.6H3z"/><path d="M13.6 10.4h3.7l3.2 3.4v1.8h-6.9"/><circle cx="7" cy="17.9" r="1.8"/><circle cx="17" cy="17.9" r="1.8"/><path d="M8.8 17.9h6.4M3 15.6v.5c0 1 .8 1.8 1.8 1.8h.4M20.5 15.6v.5c0 1-.8 1.8-1.8 1.8h.1"/></svg></span>
+                <span class="no">09</span>
+              </div>
+              <div class="en">CHANNELS</div>
+              <h4>渠道</h4>
+              <p>直接对接顺丰、京东等大型生鲜电商物流巨头，以及高端有机农产品原产地直发 B2B 合作。</p>
+            </article>
+            <article class="cell cell-adopters">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+                <span class="no">10</span>
+              </div>
+              <div class="en">EARLY ADOPTERS</div>
+              <h4>早期用户</h4>
+              <p>致力于可持续发展的高端海鲜 / 有机生鲜寄递品牌，以及亟需提升绿色包装形象的跨国食品供应商。</p>
+            </article>
+            <article class="cell cell-cost">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.8h12V20l-2-1.3-2 1.3-2-1.3L10 20l-2-1.3L6 20Z"/><path d="M9.2 8h5.6M9.2 11.6h5.6"/></svg></span>
+                <span class="no">11</span>
+              </div>
+              <div class="en">COST STRUCTURE</div>
+              <h4>成本结构</h4>
+              <p>海藻酸钠及生物降解膜等原材料采购、凝胶交联生产线搭建测试、第三方环保降解认证费用。</p>
+            </article>
+            <article class="cell cell-revenue">
+              <div class="c-top">
+                <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6.8" width="18" height="10.6" rx="2"/><circle cx="12" cy="12.1" r="2.7"/><path d="M6.3 9.7h.01M17.7 14.5h.01" stroke-width="2.4"/></svg></span>
+                <span class="no">12</span>
+              </div>
+              <div class="en">REVENUE STREAMS</div>
+              <h4>收入来源</h4>
+              <p>面向 B 端物流及生鲜企业的冰袋大宗采购销售，以及定制化环保包装解决方案的 ESG 咨询服务费。</p>
+            </article>
+          </div>
+          <div class="board-foot">
+            <span class="bf-l">ADAPTED FROM THE BUSINESS MODEL CANVAS</span>
+            <span class="bf-r">LEAN CANVAS</span>
+          </div>
         </div>
       </div>
     </section>
